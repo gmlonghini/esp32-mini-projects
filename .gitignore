@@ -1,3 +1,15 @@
+#sdkconfig.old
+*.old
+
+# build
+build/
+
+# managed components
+managed_components/
+
+#vscode
+.vscode
+
 # Prerequisites
 *.d
 
