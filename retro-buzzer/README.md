@@ -1,35 +1,30 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+# Retro Buzzer
 
-# _Sample project_
+Projeto simples e nostálgico que reproduz o tema clássico do Super Mario Bros usando um ESP32 e apenas um buzzer passivo, programado em C com ESP-IDF.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+Vídeo Youtube: [ESP32 tocando Super Mario com apenas um buzzer](https://www.youtube.com/watch?v=F0IVrVtifDo)
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+![Projeto](assets/projeto-final.png)
 
+O som é gerado via PWM (LEDC), controlando a frequência para cada nota musical.
 
+🧩 Componentes
 
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
+- ESP32
 
-## Example folder contents
+- Buzzer passivo
 
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
+🔌 Conexões
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
+- GPIO 18 → Sinal do buzzer
 
-Below is short explanation of remaining files in the project folder.
+- GND → GND do buzzer
 
-```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+- 3.3V → VCC do buzzer (se necessário)
+
+![Conexões elétrica](assets/esquematico.png)
+
+### Software
+
+- Vscode + ESP-IDF extension
+- ESP-IDF v5.3.0
