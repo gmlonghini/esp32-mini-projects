@@ -3,7 +3,7 @@
 #include "nvs_flash.h"
 #include "wifi_sta.h"
 
-#define WIFI_SSID "SSID
+#define WIFI_SSID "SSID"
 #define WIFI_PWD "PASSWORD"
 
 void app_main(void)
