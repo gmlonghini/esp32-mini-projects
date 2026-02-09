@@ -3,6 +3,9 @@
 #include "nvs_flash.h"
 #include "wifi_sta.h"
 
+#define WIFI_SSID "SSID
+#define WIFI_PWD "PASSWORD"
+
 void app_main(void)
 {
     esp_err_t ret = nvs_flash_init();
@@ -12,5 +15,5 @@ void app_main(void)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-    wifi_station_init("Longdilo", "longdilo-pwd");
+    wifi_station_init(WIFI_SSID, WIFI_PWD);
 }
