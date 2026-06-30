@@ -13,6 +13,12 @@ managed_components/
 # Prerequisites
 *.d
 
+#devcontainer
+.devcontainer
+
+#clangd
+.clangd
+
 # Object files
 *.o
 *.ko
