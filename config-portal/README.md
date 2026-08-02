@@ -12,18 +12,18 @@ O firmware opera em dois modos exclusivos, selecionados no boot por um sensor to
 - ESP32
 - Módulo touch TTP223
 - LED
-- Resistor de 220 a 330 Ω para o LED
+- Resistor de 470 Ω para o LED
 - Protoboard e jumpers
 
 ### Ligações
 
-| Componente | Pino do componente | ESP32 |
-|---|---|---|
-| TTP223 | VCC | 3V3 |
-| TTP223 | GND | GND |
-| TTP223 | SIG | GPIO27 |
-| LED | Ânodo (+), através do resistor | GPIO13 |
-| LED | Cátodo (-) | GND |
+| Componente | Pino do componente             | ESP32  |
+| ---------- | ------------------------------ | ------ |
+| TTP223     | VCC                            | 3V3    |
+| TTP223     | GND                            | GND    |
+| TTP223     | SIG                            | GPIO27 |
+| LED        | Ânodo (+), através do resistor | GPIO13 |
+| LED        | Cátodo (-)                     | GND    |
 
 > Alimente o TTP223 em 3,3 V para manter seu sinal de saída compatível com o ESP32.
 
