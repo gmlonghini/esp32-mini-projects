@@ -12,6 +12,7 @@
 #include "esp_log.h"
 #include "esp_netif.h"
 #include "esp_wifi.h"
+#include "nvs.h"
 #include "nvs_flash.h"
 
 #define WIFI_AP_SSID "ESP32_AP"
@@ -19,14 +20,64 @@
 #define WIFI_AP_CHANNEL 1
 #define WIFI_AP_MAX_CONN 4
 #define LED_GPIO GPIO_NUM_13
+#define TOUCH_BUTTON_GPIO GPIO_NUM_27
+#define BOOT_INPUT_STABILIZATION_MS 100
 #define BLINK_PERIOD_DEFAULT_MS 1000
 #define BLINK_PERIOD_MIN_MS 100
 #define BLINK_PERIOD_MAX_MS 10000
+#define NVS_NAMESPACE "config"
+#define NVS_BLINK_PERIOD_KEY "blink_ms"
 
 static const char *TAG = "config_portal";
-static TaskHandle_t led_task_handle;
 
 extern const char web_page_start[] asm("_binary_web_page_html_start");
+
+static esp_err_t save_blink_period(uint32_t period_ms)
+{
+    nvs_handle_t handle;
+    esp_err_t err = nvs_open(NVS_NAMESPACE, NVS_READWRITE, &handle);
+    if (err != ESP_OK)
+    {
+        return err;
+    }
+
+    err = nvs_set_u32(handle, NVS_BLINK_PERIOD_KEY, period_ms);
+    if (err == ESP_OK)
+    {
+        err = nvs_commit(handle);
+    }
+
+    nvs_close(handle);
+    return err;
+}
+
+static uint32_t load_blink_period(void)
+{
+    uint32_t period_ms = BLINK_PERIOD_DEFAULT_MS;
+    nvs_handle_t handle;
+    esp_err_t err = nvs_open(NVS_NAMESPACE, NVS_READONLY, &handle);
+
+    if (err == ESP_OK)
+    {
+        err = nvs_get_u32(handle, NVS_BLINK_PERIOD_KEY, &period_ms);
+        nvs_close(handle);
+    }
+
+    if (err != ESP_OK || period_ms < BLINK_PERIOD_MIN_MS ||
+        period_ms > BLINK_PERIOD_MAX_MS)
+    {
+        period_ms = BLINK_PERIOD_DEFAULT_MS;
+        ESP_LOGI(TAG, "Using default LED blink period: %lu ms",
+                 (unsigned long)period_ms);
+    }
+    else
+    {
+        ESP_LOGI(TAG, "LED blink period loaded from NVS: %lu ms",
+                 (unsigned long)period_ms);
+    }
+
+    return period_ms;
+}
 
 static esp_err_t root_handler(httpd_req_t *req)
 {
@@ -74,14 +125,16 @@ static esp_err_t blink_period_handler(httpd_req_t *req)
                                    "O período deve estar entre 100 e 10000 ms");
     }
 
-    if (led_task_handle == NULL)
+    esp_err_t err = save_blink_period((uint32_t)period_ms);
+    if (err != ESP_OK)
     {
+        ESP_LOGE(TAG, "Failed to save LED blink period: %s",
+                 esp_err_to_name(err));
         return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR,
-                                   "Task do LED indisponível");
+                                   "Não foi possível salvar o período");
     }
 
-    xTaskNotify(led_task_handle, (uint32_t)period_ms, eSetValueWithOverwrite);
-    ESP_LOGI(TAG, "LED blink period updated to %ld ms", period_ms);
+    ESP_LOGI(TAG, "LED blink period saved to NVS: %ld ms", period_ms);
 
     char response[48];
     snprintf(response, sizeof(response), "{\"period_ms\":%ld}", period_ms);
@@ -115,8 +168,7 @@ static void web_server_start(void)
 
 static void led_blink_task(void *arg)
 {
-    uint32_t period_ms = BLINK_PERIOD_DEFAULT_MS;
-    uint32_t new_period_ms;
+    const uint32_t period_ms = load_blink_period();
     bool led_on = false;
 
     gpio_config_t led_config = {
@@ -133,13 +185,26 @@ static void led_blink_task(void *arg)
     {
         led_on = !led_on;
         gpio_set_level(LED_GPIO, led_on);
-
-        if (xTaskNotifyWait(0, UINT32_MAX, &new_period_ms,
-                            pdMS_TO_TICKS(period_ms)) == pdTRUE)
-        {
-            period_ms = new_period_ms;
-        }
+        vTaskDelay(pdMS_TO_TICKS(period_ms));
     }
+}
+
+static bool configuration_mode_requested(void)
+{
+    gpio_config_t button_config = {
+        .pin_bit_mask = 1ULL << TOUCH_BUTTON_GPIO,
+        .mode = GPIO_MODE_INPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_ENABLE,
+        .intr_type = GPIO_INTR_DISABLE,
+    };
+    ESP_ERROR_CHECK(gpio_config(&button_config));
+
+    vTaskDelay(pdMS_TO_TICKS(BOOT_INPUT_STABILIZATION_MS));
+    bool pressed = gpio_get_level(TOUCH_BUTTON_GPIO) == 1;
+    ESP_LOGI(TAG, "Configuration button is %s",
+             pressed ? "pressed" : "not pressed");
+    return pressed;
 }
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base,
@@ -191,9 +256,18 @@ static void wifi_ap_init(void)
 void app_main(void)
 {
     ESP_ERROR_CHECK(nvs_flash_init());
-    wifi_ap_init();
-    BaseType_t task_created = xTaskCreate(led_blink_task, "led_blink", 2048,
-                                          NULL, 5, &led_task_handle);
-    ESP_ERROR_CHECK(task_created == pdPASS ? ESP_OK : ESP_ERR_NO_MEM);
-    web_server_start();
+
+    if (configuration_mode_requested())
+    {
+        ESP_LOGI(TAG, "Starting configuration mode");
+        wifi_ap_init();
+        web_server_start();
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Starting LED mode");
+        BaseType_t task_created = xTaskCreate(led_blink_task, "led_blink", 2048,
+                                              NULL, 5, NULL);
+        ESP_ERROR_CHECK(task_created == pdPASS ? ESP_OK : ESP_ERR_NO_MEM);
+    }
 }

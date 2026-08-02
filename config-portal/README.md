@@ -1,35 +1,72 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+# ESP32 LED Config Portal
 
-# _Sample project_
+Projeto ESP-IDF que controla o período de um LED e oferece uma interface web para configurá-lo. O valor escolhido é salvo na NVS e permanece após reinicializações ou desligamentos.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+O firmware opera em dois modos exclusivos, selecionados no boot por um sensor touch TTP223:
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+- **Modo LED:** executa somente a task que pisca o LED com o período salvo.
+- **Modo de configuração:** inicia um Access Point e o servidor web para alterar o período.
 
+## Hardware
 
+- ESP32
+- Módulo touch TTP223
+- LED
+- Resistor de 220 a 330 Ω para o LED
+- Protoboard e jumpers
 
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
+### Ligações
 
-## Example folder contents
+| Componente | Pino do componente | ESP32 |
+|---|---|---|
+| TTP223 | VCC | 3V3 |
+| TTP223 | GND | GND |
+| TTP223 | SIG | GPIO27 |
+| LED | Ânodo (+), através do resistor | GPIO13 |
+| LED | Cátodo (-) | GND |
 
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
+> Alimente o TTP223 em 3,3 V para manter seu sinal de saída compatível com o ESP32.
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
+## Como usar
 
-Below is short explanation of remaining files in the project folder.
+### Modo LED
 
+Ligue ou reinicie o ESP32 sem tocar no TTP223. O LED usará o período armazenado na NVS. Caso ainda não exista uma configuração válida, o padrão será `1000 ms`.
+
+O período representa o tempo entre cada troca de estado: com `1000 ms`, o LED permanece 1 segundo ligado e 1 segundo desligado.
+
+### Modo de configuração
+
+1. Mantenha o TTP223 tocado enquanto liga ou reinicia o ESP32.
+2. Conecte-se à rede Wi-Fi:
+   - SSID: `ESP32_AP`
+   - Senha: `12345678`
+3. Acesse `http://192.168.4.1`.
+4. Informe um período entre `100` e `10000 ms` e pressione **Salvar período**.
+5. Solte o TTP223 e reinicie o ESP32 para executar o modo LED com o novo valor.
+
+## Compilar e gravar
+
+Requer o ESP-IDF configurado no terminal.
+
+```bash
+idf.py build
+idf.py -p /dev/ttyUSB0 flash monitor
 ```
+
+Substitua `/dev/ttyUSB0` pela porta serial da sua placa.
+
+## Estrutura
+
+```text
+.
 ├── CMakeLists.txt
 ├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
+│   ├── CMakeLists.txt
+│   ├── main.c
+│   └── web_page.html
+└── README.md
 ```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+
+- `main.c`: seleção do modo, task do LED, NVS, Wi-Fi e servidor HTTP.
+- `web_page.html`: interface incorporada diretamente no firmware durante a compilação.

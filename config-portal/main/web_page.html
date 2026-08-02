@@ -69,7 +69,7 @@
           step="1"
           required
         />
-        <button type="submit">Atualizar LED</button>
+        <button type="submit">Salvar período</button>
         <output id="status" aria-live="polite"></output>
       </form>
     </main>
@@ -92,7 +92,7 @@
           }
 
           const result = await response.json();
-          status.textContent = `Intervalo atualizado: ${result.period_ms} ms`;
+          status.textContent = `Período salvo: ${result.period_ms} ms. Reinicie para aplicar.`;
         } catch (error) {
           status.textContent = "Não foi possível atualizar o intervalo.";
         }
