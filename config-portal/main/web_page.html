@@ -23,12 +23,80 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
+      form {
+        display: grid;
+        gap: 12px;
+        max-width: 320px;
+        margin: 28px auto 0;
+      }
+      input,
+      button {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+      input {
+        border: 2px solid #7c3aed;
+      }
+      button {
+        border: 0;
+        color: white;
+        background: linear-gradient(90deg, #ff1493, #7c3aed, #00a8ff);
+        font-weight: bold;
+        cursor: pointer;
+      }
+      #status {
+        min-height: 1.2em;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
     <main>
       <h1>ESP32</h1>
       <p>Você está conectado ao ponto de acesso ESP32!!!</p>
+      <form id="blink-form">
+        <label for="period-ms">Intervalo do LED (ms)</label>
+        <input
+          id="period-ms"
+          name="period_ms"
+          type="number"
+          value="1000"
+          min="100"
+          max="10000"
+          step="1"
+          required
+        />
+        <button type="submit">Atualizar LED</button>
+        <output id="status" aria-live="polite"></output>
+      </form>
     </main>
+    <script>
+      const form = document.querySelector("#blink-form");
+      const status = document.querySelector("#status");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        status.textContent = "Enviando...";
+
+        try {
+          const response = await fetch("/blink-period", {
+            method: "POST",
+            body: new URLSearchParams(new FormData(form)),
+          });
+
+          if (!response.ok) {
+            throw new Error(await response.text());
+          }
+
+          const result = await response.json();
+          status.textContent = `Intervalo atualizado: ${result.period_ms} ms`;
+        } catch (error) {
+          status.textContent = "Não foi possível atualizar o intervalo.";
+        }
+      });
+    </script>
   </body>
 </html>
