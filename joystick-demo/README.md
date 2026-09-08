@@ -1,32 +1,54 @@
-# _Sample project_
+# ESP32 Joystick + RGB LED Demo
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+Projeto ESP-IDF que utiliza um joystick analógico para controlar a cor e a
+intensidade de um módulo LED RGB conectado ao ESP32.
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+O eixo horizontal seleciona a cor no espectro HSV, enquanto o eixo vertical
+controla o brilho. As saídas do LED são acionadas por PWM utilizando o
+periférico LEDC do ESP32.
 
+## Hardware
 
+- ESP32
+- Módulo joystick analógico
+- Módulo LED RGB de cátodo comum
+- Jumpers
 
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
+### Ligações
 
-## Example folder contents
+| Componente | Pino do componente | Conexão         |
+| ---------- | ------------------ | --------------- |
+| Joystick   | VCC                | 3V3 do ESP32    |
+| Joystick   | GND                | GND do ESP32    |
+| Joystick   | VX                 | GPIO34 do ESP32 |
+| Joystick   | VY                 | GPIO35 do ESP32 |
+| LED RGB    | R                  | GPIO32 do ESP32 |
+| LED RGB    | G                  | GPIO33 do ESP32 |
+| LED RGB    | B                  | GPIO25 do ESP32 |
+| LED RGB    | `-`                | GND do ESP32    |
 
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
+> O joystick é alimentado com 3,3 V e todos os GNDs devem estar conectados em comum.
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
+![Diagrama de conexão do ESP32 com o joystick e o LED RGB](docs/wiring-diagram.png)
 
-Below is short explanation of remaining files in the project folder.
+## Funcionamento
 
+O joystick funciona como um controle de dois eixos. O movimento horizontal
+percorre as diferentes cores disponíveis, enquanto o movimento vertical
+aumenta ou diminui a intensidade do LED.
+
+As leituras são suavizadas para evitar que pequenas oscilações alterem a cor
+ou provoquem variações visíveis no brilho. O LED acompanha continuamente os
+movimentos realizados no joystick.
+
+## Compilar e gravar
+
+Requer o ESP-IDF configurado no terminal.
+
+```bash
+idf.py set-target esp32
+idf.py build
+idf.py -p /dev/ttyUSB0 flash monitor
 ```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+
+Substitua `/dev/ttyUSB0` pela porta serial da sua placa.
