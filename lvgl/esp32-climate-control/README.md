@@ -1,8 +1,10 @@
 # ESP32 Climate Control
 
-Painel de controle climático desenvolvido com **ESP32-S3**, **LVGL** e uma interface gráfica criada no **Figma**. O sistema monitora temperatura e umidade com um sensor SHT30 e permite ligar ou desligar uma ventoinha por meio de um sensor touch e um módulo relé.
+Painel de controle climático desenvolvido com **ESP32-S3** e **LVGL**. A interface gráfica foi desenhada no **Figma**, construída no **LVGL Pro** e exportada para o projeto ESP-IDF no **Visual Studio Code**. O sistema monitora temperatura e umidade com um sensor SHT30 e permite ligar ou desligar uma ventoinha por meio de um sensor touch e um módulo relé.
 
 Mais do que uma demonstração de sensores, este projeto explora a construção de interfaces embarcadas bonitas e profissionais. O layout criado no Figma é transformado em componentes LVGL e integrado ao firmware, mostrando como um microcontrolador pode ser a base de painéis para automação, máquinas, equipamentos e sistemas de controle mais complexos.
+
+![Montagem do painel de controle climático com ESP32-S3](docs/project.jpg)
 
 ## Funcionalidades
 
@@ -15,11 +17,19 @@ Mais do que uma demonstração de sensores, este projeto explora a construção 
 - atualização sincronizada da interface em tasks FreeRTOS independentes;
 - driver SPI próprio para o controlador ST7789.
 
-## Interface: Figma + LVGL
+## Fluxo de desenvolvimento da interface
 
-A interface foi planejada no Figma para definir hierarquia visual, espaçamento, tipografia, cores e estados antes da implementação no hardware. O resultado foi levado para o LVGL, que renderiza o painel diretamente no ESP32-S3.
+O desenvolvimento da interface seguiu este fluxo:
 
-Os arquivos gerados da interface estão organizados como um componente independente em `components/ui`. Eles incluem a tela principal, componentes reutilizáveis, imagens e diferentes pesos da fonte Inter. O código da aplicação mantém a lógica de negócio separada da camada visual e atualiza somente os elementos dinâmicos:
+**Figma → LVGL Pro → exportação do código → VS Code + Espressif IDF → ESP32-S3**
+
+1. **Design no Figma:** definição da hierarquia visual, do espaçamento, da tipografia, das cores e dos estados da interface.
+2. **Construção no LVGL Pro:** o design foi levado para o LVGL Pro, onde a tela foi transformada em componentes compatíveis com LVGL, construída e validada.
+3. **Geração e exportação:** o LVGL Pro gerou os arquivos C, fontes, imagens, componentes e definições da tela presentes em `components/ui`.
+4. **Integração no VS Code:** o código exportado foi incorporado ao projeto ESP-IDF no Visual Studio Code, utilizando a extensão **Espressif IDF**. Nessa etapa foram implementados os drivers, as tasks FreeRTOS e a integração da interface com os sensores e atuadores.
+5. **Execução no hardware:** o firmware é compilado, gravado e executado no ESP32-S3, que renderiza a interface no display por meio do LVGL.
+
+Este repositório contém o **código-fonte do projeto exportado e integrado no ambiente ESP-IDF**. Os arquivos gerados da interface estão organizados como um componente independente em `components/ui`. Eles incluem a tela principal, componentes reutilizáveis, imagens e diferentes pesos da fonte Inter. O código da aplicação mantém a lógica de negócio separada da camada visual e atualiza somente os elementos dinâmicos:
 
 - valor da temperatura;
 - valor da umidade;
@@ -95,6 +105,8 @@ O display usa renderização parcial para reduzir o consumo de RAM. As atualiza�
 - FreeRTOS;
 - LVGL 9.5.0;
 - Figma;
+- LVGL Pro;
+- Visual Studio Code com a extensão Espressif IDF;
 - C e CMake;
 - SPI e I²C.
 
@@ -126,12 +138,13 @@ I (...) climate_control: Ventoinha ligada
 .
 ├── components
 │   └── ui
-│       ├── components     # Componentes visuais reutilizáveis
+│       ├── components     # Componentes visuais gerados pelo LVGL Pro
 │       ├── fonts          # Fontes Inter incorporadas ao firmware
 │       ├── images         # Recursos gráficos convertidos para LVGL
-│       └── screens        # Tela do painel ambiental
+│       └── screens        # Tela gerada do painel ambiental
 ├── docs
 │   ├── hardware-block-diagram.png
+│   ├── project.jpg
 │   └── software-architecture-diagram.png
 ├── main
 │   ├── main.c             # Inicialização, tasks e integração do sistema
@@ -148,4 +161,4 @@ Os pinos, os níveis ativos, os períodos de atualização e as dimensões do di
 
 O endereço I²C configurado para o SHT30 é `0x45`. Alguns módulos usam `0x44`; nesse caso, altere `SHT30_ADDRESS` antes de compilar.
 
-Para modificar o visual, edite o projeto de interface e atualize os arquivos de `components/ui`. Evite misturar alterações manuais nos arquivos gerados com a lógica da aplicação, pois uma nova geração da interface pode sobrescrevê-las.
+Para modificar o visual, altere primeiro o design no Figma, atualize a interface no LVGL Pro e faça uma nova geração e exportação para `components/ui`. Evite editar manualmente os arquivos gerados, pois uma nova exportação do LVGL Pro pode sobrescrever essas alterações. A lógica específica da aplicação deve permanecer separada nos arquivos do firmware.
