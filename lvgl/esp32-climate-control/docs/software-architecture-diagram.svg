@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <style>
+      text { font-family: Arial, sans-serif; fill: #111827; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #4b5563; }
+      .box { fill: #ffffff; stroke: #111827; stroke-width: 3; }
+      .head-main { fill: #e2e8f0; stroke: #111827; stroke-width: 3; }
+      .head-blue { fill: #dbeafe; stroke: #111827; stroke-width: 3; }
+      .head-green { fill: #d1fae5; stroke: #111827; stroke-width: 3; }
+      .head-orange { fill: #ffedd5; stroke: #111827; stroke-width: 3; }
+      .box-title { font-size: 23px; font-weight: 700; }
+      .box-sub { font-size: 16px; fill: #475569; }
+      .step-title { font-size: 18px; font-weight: 700; }
+      .body { font-size: 17px; }
+      .small { font-size: 15px; fill: #475569; }
+      .arrow { fill: none; stroke: #334155; stroke-width: 4; marker-end: url(#arrow); }
+      .branch { fill: none; stroke: #334155; stroke-width: 4; }
+      .divider { stroke: #cbd5e1; stroke-width: 2; }
+      .pill { fill: #f8fafc; stroke: #94a3b8; stroke-width: 2; }
+      .loop { font-size: 15px; font-weight: 700; fill: #334155; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#ffffff"/>
+  <text x="70" y="58" class="title">Arquitetura do firmware</text>
+  <text x="70" y="88" class="subtitle">Inicialização do sistema e tasks FreeRTOS executadas em paralelo</text>
+
+  <!-- app_main -->
+  <rect x="100" y="125" width="1720" height="315" rx="10" class="box"/>
+  <rect x="100" y="125" width="1720" height="68" rx="10" class="head-main"/>
+  <rect x="100" y="178" width="1720" height="15" fill="#e2e8f0"/>
+  <text x="960" y="168" text-anchor="middle" class="box-title">app_main() — SETUP DO SISTEMA</text>
+
+  <!-- setup steps -->
+  <rect x="145" y="225" width="280" height="165" rx="8" class="pill"/>
+  <text x="165" y="258" class="step-title">1. Mutex do LVGL</text>
+  <text x="165" y="293" class="body">Cria lvgl_mutex</text>
+  <text x="165" y="324" class="small">Protege o acesso à UI</text>
+
+  <path d="M425 307 H475" class="arrow"/>
+
+  <rect x="485" y="225" width="280" height="165" rx="8" class="pill"/>
+  <text x="505" y="258" class="step-title">2. Setup dos GPIOs</text>
+  <text x="505" y="293" class="body">GPIO37: touch (entrada)</text>
+  <text x="505" y="324" class="body">GPIO21: relé (saída)</text>
+  <text x="505" y="355" class="small">Ventoinha inicia desligada</text>
+
+  <path d="M765 307 H815" class="arrow"/>
+
+  <rect x="825" y="225" width="280" height="165" rx="8" class="pill"/>
+  <text x="845" y="258" class="step-title">3. Setup do display</text>
+  <text x="845" y="293" class="body">ST7789 via SPI2</text>
+  <text x="845" y="324" class="small">Configura pinos e rotação</text>
+
+  <path d="M1105 307 H1155" class="arrow"/>
+
+  <rect x="1165" y="225" width="280" height="165" rx="8" class="pill"/>
+  <text x="1185" y="258" class="step-title">4. Setup LVGL + UI</text>
+  <text x="1185" y="293" class="body">Tick, buffer e flush</text>
+  <text x="1185" y="324" class="body">Cria e carrega a tela</text>
+  <text x="1185" y="355" class="small">Valores começam com “--”</text>
+
+  <path d="M1445 307 H1495" class="arrow"/>
+
+  <rect x="1505" y="225" width="270" height="165" rx="8" class="pill"/>
+  <text x="1525" y="258" class="step-title">5. Cria as tasks</text>
+  <text x="1525" y="293" class="body">lvgl_task</text>
+  <text x="1525" y="324" class="body">sht30_task</text>
+  <text x="1525" y="355" class="body">button_task</text>
+
+  <!-- task branch -->
+  <path d="M1640 390 V485 H325 V540" class="branch"/>
+  <path d="M960 485 V540" class="branch"/>
+  <path d="M1595 485 V540" class="branch"/>
+  <circle cx="960" cy="485" r="7" fill="#334155"/>
+  <circle cx="1595" cy="485" r="7" fill="#334155"/>
+  <path d="M325 525 V540" class="arrow"/>
+  <path d="M960 525 V540" class="arrow"/>
+  <path d="M1595 525 V540" class="arrow"/>
+
+  <!-- Button task -->
+  <rect x="70" y="545" width="510" height="440" rx="10" class="box"/>
+  <rect x="70" y="545" width="510" height="82" rx="10" class="head-orange"/>
+  <rect x="70" y="612" width="510" height="15" fill="#ffedd5"/>
+  <text x="325" y="581" text-anchor="middle" class="box-title">button_task</text>
+  <text x="325" y="607" text-anchor="middle" class="box-sub">Touch + controle da ventoinha</text>
+  <rect x="100" y="650" width="115" height="32" rx="16" fill="#fff7ed" stroke="#fb923c"/>
+  <text x="158" y="672" text-anchor="middle" class="loop">LOOP: 10 ms</text>
+  <text x="105" y="728" class="body">1. Lê o GPIO37 (touch)</text>
+  <text x="105" y="774" class="body">2. Aplica debounce de 100 ms</text>
+  <text x="105" y="820" class="body">3. Se o botão foi pressionado:</text>
+  <text x="132" y="858" class="body">• alterna o estado da ventoinha</text>
+  <text x="132" y="896" class="body">• atualiza o relé no GPIO21</text>
+  <text x="132" y="934" class="body">• atualiza o status na UI</text>
+  <text x="105" y="968" class="small">A UI é acessada usando o lvgl_mutex.</text>
+
+  <!-- SHT30 task -->
+  <rect x="705" y="545" width="510" height="440" rx="10" class="box"/>
+  <rect x="705" y="545" width="510" height="82" rx="10" class="head-green"/>
+  <rect x="705" y="612" width="510" height="15" fill="#d1fae5"/>
+  <text x="960" y="581" text-anchor="middle" class="box-title">sht30_task</text>
+  <text x="960" y="607" text-anchor="middle" class="box-sub">Temperatura e umidade</text>
+  <rect x="735" y="650" width="125" height="32" rx="16" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="798" y="672" text-anchor="middle" class="loop">LOOP: 3 s</text>
+  <text x="740" y="728" class="body">1. Inicializa o I²C e o SHT30</text>
+  <text x="740" y="774" class="small">SDA GPIO47 • SCL GPIO48 • endereço 0x45</text>
+  <text x="740" y="828" class="body">2. Lê temperatura e umidade</text>
+  <text x="740" y="874" class="body">3. Se a leitura for válida:</text>
+  <text x="767" y="912" class="body">• atualiza os valores na UI</text>
+  <text x="740" y="960" class="small">Se falhar, registra o erro e tenta novamente.</text>
+
+  <!-- LVGL task -->
+  <rect x="1340" y="545" width="510" height="440" rx="10" class="box"/>
+  <rect x="1340" y="545" width="510" height="82" rx="10" class="head-blue"/>
+  <rect x="1340" y="612" width="510" height="15" fill="#dbeafe"/>
+  <text x="1595" y="581" text-anchor="middle" class="box-title">lvgl_task</text>
+  <text x="1595" y="607" text-anchor="middle" class="box-sub">Processamento e atualização gráfica</text>
+  <rect x="1370" y="650" width="125" height="32" rx="16" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="1433" y="672" text-anchor="middle" class="loop">LOOP: 10 ms</text>
+  <text x="1375" y="728" class="body">1. Obtém o lvgl_mutex</text>
+  <text x="1375" y="782" class="body">2. Executa lv_timer_handler()</text>
+  <text x="1375" y="836" class="body">3. Libera o lvgl_mutex</text>
+  <text x="1375" y="890" class="body">4. Aguarda 10 ms</text>
+  <line x1="1375" y1="923" x2="1815" y2="923" class="divider"/>
+  <text x="1375" y="958" class="small">O callback de flush envia a imagem ao display via SPI.</text>
+</svg>

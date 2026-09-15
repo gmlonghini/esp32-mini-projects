@@ -39,6 +39,10 @@ extern "C" {
 
 
 
+extern lv_obj_t * environmentaldashboard_temperature_value;
+extern lv_obj_t * environmentaldashboard_humidity_value;
+extern lv_obj_t * environmentaldashboard_fan_status;
+
 lv_obj_t * environmentaldashboard_create(void);
 
 /**********************

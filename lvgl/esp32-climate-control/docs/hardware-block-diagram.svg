@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <style>
+      text { font-family: Arial, sans-serif; fill: #111827; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #4b5563; }
+      .box { fill: #ffffff; stroke: #111827; stroke-width: 3; }
+      .box-head { fill: #eef2f7; stroke: #111827; stroke-width: 3; }
+      .box-title { font-size: 22px; font-weight: 700; }
+      .box-sub { font-size: 16px; fill: #4b5563; }
+      .pin { font-size: 15px; font-weight: 700; }
+      .wire { fill: none; stroke: #111827; stroke-width: 3; }
+      .power3 { fill: none; stroke: #059669; stroke-width: 4; }
+      .power5 { fill: none; stroke: #d97706; stroke-width: 4; }
+      .gnd { fill: none; stroke: #6b7280; stroke-width: 4; }
+      .junction3 { fill: #059669; }
+      .junction5 { fill: #d97706; }
+      .junctiong { fill: #6b7280; }
+      .bus-label { font-size: 15px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#ffffff"/>
+  <text x="70" y="58" class="title">Diagrama de hardware — ESP32-S3</text>
+  <text x="70" y="88" class="subtitle">Verde: 3,3 V  •  laranja: 5 V  •  cinza: GND  •  preto: sinais</text>
+
+  <!-- ESP32-S3 -->
+  <rect x="700" y="150" width="470" height="770" rx="8" class="box"/>
+  <rect x="700" y="150" width="470" height="70" rx="8" class="box-head"/>
+  <rect x="700" y="205" width="470" height="15" fill="#eef2f7"/>
+  <text x="935" y="193" text-anchor="middle" class="box-title">ESP32-S3</text>
+  <text x="716" y="270" class="pin">VIN (5 V)</text>
+  <text x="716" y="315" class="pin">GND</text>
+  <text x="716" y="670" class="pin">GPIO21</text>
+  <text x="1154" y="260" text-anchor="end" class="pin">GPIO12 / SCLK</text>
+  <text x="1154" y="300" text-anchor="end" class="pin">GPIO11 / MOSI</text>
+  <text x="1154" y="340" text-anchor="end" class="pin">GPIO10 / CS</text>
+  <text x="1154" y="380" text-anchor="end" class="pin">GPIO9 / DC</text>
+  <text x="1154" y="420" text-anchor="end" class="pin">GPIO14 / RST</text>
+  <text x="1154" y="560" text-anchor="end" class="pin">GPIO48 / SCL</text>
+  <text x="1154" y="600" text-anchor="end" class="pin">GPIO47 / SDA</text>
+  <text x="1154" y="780" text-anchor="end" class="pin">GPIO37</text>
+
+  <!-- Source -->
+  <rect x="70" y="150" width="330" height="235" rx="8" class="box"/>
+  <rect x="70" y="150" width="330" height="65" rx="8" class="box-head"/>
+  <rect x="70" y="200" width="330" height="15" fill="#eef2f7"/>
+  <text x="235" y="191" text-anchor="middle" class="box-title">FONTE EXTERNA</text>
+  <text x="384" y="260" text-anchor="end" class="pin">3,3 V</text>
+  <text x="384" y="305" text-anchor="end" class="pin">5 V</text>
+  <text x="384" y="350" text-anchor="end" class="pin">GND</text>
+
+  <!-- Relay -->
+  <rect x="70" y="555" width="330" height="260" rx="8" class="box"/>
+  <rect x="70" y="555" width="330" height="65" rx="8" class="box-head"/>
+  <rect x="70" y="605" width="330" height="15" fill="#eef2f7"/>
+  <text x="235" y="596" text-anchor="middle" class="box-title">MÓDULO RELÉ 5 V</text>
+  <text x="384" y="670" text-anchor="end" class="pin">IN</text>
+  <text x="384" y="710" text-anchor="end" class="pin">VCC</text>
+  <text x="384" y="750" text-anchor="end" class="pin">GND</text>
+  <text x="86" y="710" class="pin">COM</text>
+  <text x="86" y="760" class="pin">NO</text>
+
+  <!-- Fan -->
+  <rect x="70" y="875" width="330" height="135" rx="8" class="box"/>
+  <rect x="70" y="875" width="330" height="60" rx="8" class="box-head"/>
+  <rect x="70" y="920" width="330" height="15" fill="#eef2f7"/>
+  <text x="235" y="914" text-anchor="middle" class="box-title">VENTOINHA 5 V</text>
+  <text x="86" y="970" class="pin">+5 V</text>
+  <text x="384" y="970" text-anchor="end" class="pin">GND</text>
+
+  <!-- Display -->
+  <rect x="1430" y="135" width="420" height="340" rx="8" class="box"/>
+  <rect x="1430" y="135" width="420" height="70" rx="8" class="box-head"/>
+  <rect x="1430" y="190" width="420" height="15" fill="#eef2f7"/>
+  <text x="1640" y="177" text-anchor="middle" class="box-title">DISPLAY WEACT STUDIO</text>
+  <text x="1640" y="199" text-anchor="middle" class="box-sub">320 × 240 • ST7789</text>
+  <text x="1446" y="260" class="pin">SCLK</text>
+  <text x="1446" y="300" class="pin">MOSI</text>
+  <text x="1446" y="340" class="pin">CS</text>
+  <text x="1446" y="380" class="pin">DC</text>
+  <text x="1446" y="420" class="pin">RST</text>
+  <text x="1834" y="260" text-anchor="end" class="pin">VCC (3,3 V)</text>
+  <text x="1834" y="300" text-anchor="end" class="pin">BL (3,3 V)</text>
+  <text x="1834" y="340" text-anchor="end" class="pin">GND</text>
+
+  <!-- SHT30 -->
+  <rect x="1430" y="510" width="420" height="190" rx="8" class="box"/>
+  <rect x="1430" y="510" width="420" height="65" rx="8" class="box-head"/>
+  <rect x="1430" y="560" width="420" height="15" fill="#eef2f7"/>
+  <text x="1640" y="551" text-anchor="middle" class="box-title">SHT30</text>
+  <text x="1446" y="610" class="pin">D1 (SCL)</text>
+  <text x="1446" y="650" class="pin">D2 (SDA)</text>
+  <text x="1834" y="610" text-anchor="end" class="pin">3.3V</text>
+  <text x="1834" y="650" text-anchor="end" class="pin">GND</text>
+
+  <!-- Touch -->
+  <rect x="1430" y="755" width="420" height="165" rx="8" class="box"/>
+  <rect x="1430" y="755" width="420" height="65" rx="8" class="box-head"/>
+  <rect x="1430" y="805" width="420" height="15" fill="#eef2f7"/>
+  <text x="1640" y="796" text-anchor="middle" class="box-title">SENSOR TOUCH</text>
+  <text x="1446" y="865" class="pin">OUT</text>
+  <text x="1834" y="850" text-anchor="end" class="pin">VCC (3,3 V)</text>
+  <text x="1834" y="890" text-anchor="end" class="pin">GND</text>
+
+  <!-- Signal wires -->
+  <path d="M1170 255 H1430" class="wire"/>
+  <path d="M1170 295 H1430" class="wire"/>
+  <path d="M1170 335 H1430" class="wire"/>
+  <path d="M1170 375 H1430" class="wire"/>
+  <path d="M1170 415 H1430" class="wire"/>
+  <path d="M1170 555 H1300 V605 H1430" class="wire"/>
+  <path d="M1170 595 H1270 V645 H1430" class="wire"/>
+  <path d="M1170 775 H1300 V860 H1430" class="wire"/>
+  <path d="M700 665 H400" class="wire"/>
+
+  <!-- Relay contact to fan -->
+  <path d="M70 755 H40 V965 H70" class="power5"/>
+  <text x="28" y="850" transform="rotate(-90 28 850)" text-anchor="middle" class="bus-label" fill="#d97706">NO → +5 V</text>
+
+  <!-- 3.3 V bus -->
+  <path d="M400 255 H500 V115 H1880 V845 H1850" class="power3"/>
+  <path d="M1880 255 H1850" class="power3"/>
+  <path d="M1880 295 H1850" class="power3"/>
+  <path d="M1880 605 H1850" class="power3"/>
+  <circle cx="1880" cy="255" r="6" class="junction3"/>
+  <circle cx="1880" cy="295" r="6" class="junction3"/>
+  <circle cx="1880" cy="605" r="6" class="junction3"/>
+  <circle cx="1880" cy="845" r="6" class="junction3"/>
+  <text x="520" y="105" class="bus-label" fill="#059669">3,3 V</text>
+
+  <!-- 5 V bus -->
+  <path d="M400 300 H540 V265 H700" class="power5"/>
+  <path d="M540 300 V705 H400" class="power5"/>
+  <path d="M540 520 H35 V705 H70" class="power5"/>
+  <circle cx="540" cy="300" r="6" class="junction5"/>
+  <circle cx="540" cy="520" r="6" class="junction5"/>
+  <text x="550" y="290" class="bus-label" fill="#d97706">5 V</text>
+  <text x="45" y="510" class="bus-label" fill="#d97706">5 V para COM</text>
+
+  <!-- GND bus -->
+  <path d="M400 345 H620 V1035 H1900" class="gnd"/>
+  <path d="M620 310 V345" class="gnd"/>
+  <path d="M620 310 H700" class="gnd"/>
+  <path d="M400 745 H620" class="gnd"/>
+  <path d="M400 965 H620" class="gnd"/>
+  <path d="M1900 335 V1035" class="gnd"/>
+  <path d="M1850 335 H1900 M1850 645 H1900" fill="none" stroke="#ffffff" stroke-width="11"/>
+  <path d="M1850 335 H1900" class="gnd"/>
+  <path d="M1850 645 H1900" class="gnd"/>
+  <path d="M1850 885 H1900" class="gnd"/>
+  <circle cx="620" cy="345" r="6" class="junctiong"/>
+  <circle cx="620" cy="745" r="6" class="junctiong"/>
+  <circle cx="620" cy="965" r="6" class="junctiong"/>
+  <circle cx="1900" cy="335" r="6" class="junctiong"/>
+  <circle cx="1900" cy="645" r="6" class="junctiong"/>
+  <circle cx="1900" cy="885" r="6" class="junctiong"/>
+  <text x="900" y="1025" class="bus-label" fill="#6b7280">GND COMUM</text>
+</svg>

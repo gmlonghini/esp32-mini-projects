@@ -22,6 +22,10 @@
  *  STATIC VARIABLES
  **********************/
 
+lv_obj_t * environmentaldashboard_temperature_value = NULL;
+lv_obj_t * environmentaldashboard_humidity_value = NULL;
+lv_obj_t * environmentaldashboard_fan_status = NULL;
+
 /***********************
  *  STATIC PROTOTYPES
  **********************/
@@ -108,6 +112,7 @@ lv_obj_t * environmentaldashboard_create(void)
         lv_label_set_text(label_1, "25.6 ºC");
         lv_obj_set_style_text_font(label_1, font_inter_bold_22, 0);
         lv_obj_set_style_text_color(label_1, lv_color_hex(0xF9FAFB), 0);
+        environmentaldashboard_temperature_value = label_1;
 
         lv_obj_t * container_3 = container_create(container_0);
         lv_obj_set_x(container_3, 148);
@@ -148,6 +153,7 @@ lv_obj_t * environmentaldashboard_create(void)
         lv_label_set_text(label_3, "100%");
         lv_obj_set_style_text_font(label_3, font_inter_bold_22, 0);
         lv_obj_set_style_text_color(label_3, lv_color_hex(0xF9FAFB), 0);
+        environmentaldashboard_humidity_value = label_3;
 
         lv_obj_t * card_2 = card_create(container_0);
         lv_obj_set_x(card_2, 0);
@@ -179,6 +185,7 @@ lv_obj_t * environmentaldashboard_create(void)
         lv_obj_t * fanstatusindicator_0 = fanstatusindicator_create(card_2, false);
         lv_obj_set_x(fanstatusindicator_0, 242);
         lv_obj_set_y(fanstatusindicator_0, 17);
+        environmentaldashboard_fan_status = lv_obj_get_child(fanstatusindicator_0, 0);
 
         lv_obj_t * label_5 = label_create(lv_obj_0);
         lv_obj_set_x(label_5, 74);
@@ -200,4 +207,3 @@ lv_obj_t * environmentaldashboard_create(void)
 /**********************
  *   STATIC FUNCTIONS
  **********************/
-
