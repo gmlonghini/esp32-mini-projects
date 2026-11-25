@@ -1,35 +1,77 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+# ESP32 RFID Logger com Google Sheets
 
-# _Sample project_
+Projeto ESP-IDF que utiliza um leitor RFID RC522 para identificar cartões e
+registrar as leituras em uma planilha do Google Sheets por meio de um Web App
+do Google Apps Script.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+Ao aproximar um cartão, o ESP32 lê seu UID e envia uma requisição HTTP pela
+rede Wi-Fi. A planilha armazena o horário da leitura, o UID e o identificador
+do dispositivo.
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+## Hardware
 
+- ESP32
+- Módulo leitor RFID RC522
+- Cartão ou tag compatível com o RC522
+- Fonte de alimentação de 5 V ou cabo USB
+- Jumpers
 
+### Ligações
 
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
+| Componente | Pino do componente | Conexão         |
+| ---------- | ------------------ | --------------- |
+| RC522      | 3.3V               | 3V3 do ESP32    |
+| RC522      | GND                | GND do ESP32    |
+| RC522      | SDA / SS           | GPIO5 do ESP32  |
+| RC522      | SCK                | GPIO18 do ESP32 |
+| RC522      | MOSI               | GPIO23 do ESP32 |
+| RC522      | MISO               | GPIO19 do ESP32 |
+| RC522      | RST                | GPIO22 do ESP32 |
 
-## Example folder contents
+> O RC522 deve ser alimentado com 3,3 V. Se uma fonte externa for utilizada
+> para alimentar o ESP32 pelo pino VIN/5V, conecte também os GNDs em comum.
 
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
+![Diagrama de conexão do ESP32 com o leitor RFID RC522](docs/rfid-wiring-diagram-simple.png)
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
+## Funcionamento
 
-Below is short explanation of remaining files in the project folder.
+O ESP32 conecta-se à rede Wi-Fi e monitora continuamente o leitor RC522.
+Quando um cartão é detectado, seu UID é colocado em uma fila para que o envio
+HTTP aconteça sem bloquear a leitura RFID.
 
+O firmware envia ao Web App um objeto JSON com o token de acesso, o UID lido e
+o identificador do ESP32. O Google Apps Script valida a requisição e adiciona
+uma nova linha à planilha. O cliente também trata o redirecionamento HTTP do
+Apps Script e considera o registro concluído quando recebe uma resposta `OK`.
+
+![Fluxo da leitura RFID até o Google Sheets](docs/rfid-google-sheets-flow.png)
+
+O resultado na planilha contém o horário, a leitura RFID e o dispositivo que
+enviou o registro.
+
+![Exemplo dos registros na planilha](docs/sheets_print.png)
+
+## Configuração
+
+Antes de compilar, ajuste as seguintes constantes:
+
+- `WIFI_SSID` e `WIFI_PASSWORD` em `main/main.c` com os dados da rede Wi-Fi;
+- `API_URL` em `main/http_client.c` com a URL do Web App publicado;
+- `API_TOKEN` com o mesmo token validado pelo Google Apps Script;
+- `DEVICE_ID` com o nome usado para identificar este ESP32 na planilha.
+
+O Web App deve aceitar o JSON enviado pelo firmware, gravar os campos na
+planilha e retornar o texto `OK` quando a operação for concluída.
+
+## Compilar e gravar
+
+Requer o ESP-IDF configurado no terminal. A dependência do driver RC522 é
+obtida automaticamente pelo IDF Component Manager durante a compilação.
+
+```bash
+idf.py set-target esp32
+idf.py build
+idf.py -p /dev/ttyUSB0 flash monitor
 ```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+
+Substitua `/dev/ttyUSB0` pela porta serial da sua placa.
